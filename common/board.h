@@ -24,3 +24,5 @@ extern uint32_t 			total_flash_size;
 const static Pin PIN_USB_DM = {.group = 0, .pin = 24, .mux = MUX_PA24G_USB_DM };
 const static Pin PIN_USB_DP = {.group = 0, .pin = 25, .mux = MUX_PA25G_USB_DP };
 
+
+

@@ -32,7 +32,7 @@ CFLAGS = -Wall --std=gnu99 -Os -g3 \
 CFLAGS += \
 			-D USB_PRODUCT_ID=0x7551 \
 			-D USB_VENDOR_ID=0x1209 \
-			-D USB_MANUFACTURER_STR='"Nobody"' \
+			-D USB_MANUFACTURER_STR='"Lucid Scientific"' \
 			-D USB_PRODUCT_STR='"DAFU Bootloader"' \
 			-D COPYRIGHT_NOTE='"Visit https://githib.com/opendime/DAFU"'
 
@@ -40,8 +40,12 @@ CFLAGS += \
 PRJ_PATH = deps
 INC_PATHS = \
 			usb \
+			common/utils/interrupt \
 			sam0/cmsis \
 			sam0/include \
+			sam0/drivers/port\
+			sam0/drivers/system/pinmux \
+			sam0/drivers/interrupt\
 			sam0/cmsis/samd21/include \
 			sam0/cmsis/samd21/source 
 
@@ -59,6 +63,8 @@ C_SRCS = \
 			usb.c \
 			common/clock.c \
 			my_customizations.c \
+			deps/sam0/drivers/port/port.c \
+			deps/sam0/drivers/system/pinmux/pinmux.c \
 			deps/usb/class/dfu/dfu.c \
 			deps/usb/samd/usb_samd.c \
 			deps/usb/usb_requests.c

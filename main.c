@@ -12,7 +12,7 @@
 
 #include <string.h>
 #include <stdbool.h>
-
+#include <port.h>
 #include "boot.h"
 #include "common/nvm.h"
 
@@ -60,6 +60,7 @@ void init_systick() {
 /*** USB / DFU ***/
 
 void dfu_cb_dnload_block(uint16_t block_num, uint16_t len) {
+        port_pin_set_output_level(PIN_PB30, 1);
 	if (usb_setup.wLength > DFU_TRANSFER_SIZE) {
 		dfu_error(DFU_STATUS_errUNKNOWN);
 		return;
@@ -79,11 +80,16 @@ void dfu_cb_dnload_packet_completed(uint16_t block_num, uint16_t offset, uint8_t
 }
 
 unsigned dfu_cb_dnload_block_completed(uint16_t block_num, uint16_t length) {
+        port_pin_set_output_level(PIN_PB30, 0);
 	return 0;
 }
 
 void dfu_cb_manifest(void) {
 	exit_and_jump = 1;
+}
+
+uint16_t dfu_cb_upload_block(uint16_t block, uint8_t** ptr) {
+
 }
 
 void noopFunction(void)
@@ -108,7 +114,6 @@ void bootloader_main()
 	board_setup_early();
 
 	hardware_detect();
-
 	clock_init_usb(GCLK_SYSTEM);
 	init_systick();
 	nvm_init();
@@ -124,7 +129,7 @@ void bootloader_main()
 	usb_attach();
 
 	while(!exit_and_jump) {
-		__WFI(); /* conserve power */
+            __WFI(); /* conserve power */
 	}
 
 	delay_ms(25);
@@ -148,15 +153,7 @@ bool flash_valid() {
 	return     sp > 0x20000000
 			&& ip >= 0x00001000
 			&& ip <  0x00400000;
-}
 
-
-bool button_pressed(void)
-{
-	// Repalce this function (in another file) if you want to 
-	// test for a pin or button being pressed during boot time
-	// to get into DFU mode.
-	return false;
 }
 
 bool bootloader_sw_triggered()
@@ -166,8 +163,9 @@ bool bootloader_sw_triggered()
 }
 
 int main() {
-	if (!flash_valid() || button_pressed() || bootloader_sw_triggered()) {
-		bootloader_main();
+	
+        if (!flash_valid() || button_pressed() || bootloader_sw_triggered()) {
+            bootloader_main();
 	}
 
 	jump_to_flash(FLASH_FW_ADDR, 0);
